@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
   Cloud,
   Bell,
@@ -14,26 +14,27 @@ import {
   FileText,
   SearchCheck,
   CheckSquare,
-} from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { CitySearchBar } from '@/components/common/CitySearchBar';
-import { useAuth } from '@/context/AuthContext';
+} from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { CitySearchBar } from "@/components/common/CitySearchBar";
+import { useAuth } from "@/context/AuthContext";
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
   const { i18n, t } = useTranslation();
-  const { isAuthenticated, user, isOperator, isCitizen, logout } = useAuth();
+  const { isAuthenticated, user, isOperator, isCitizen, isAdmin, logout } =
+    useAuth();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [toolsDropdownOpen, setToolsDropdownOpen] = useState(false);
   const toolsRef = useRef<HTMLDivElement>(null);
 
-  const currentLang = i18n.language || 'en';
+  const currentLang = i18n.language || "en";
 
   const toggleLanguage = () => {
-    const nextLang = currentLang === 'en' ? 'hi' : 'en';
+    const nextLang = currentLang === "en" ? "hi" : "en";
     i18n.changeLanguage(nextLang);
-    localStorage.setItem('nwbda_lang', nextLang);
+    localStorage.setItem("nwbda_lang", nextLang);
   };
 
   // Close dropdown on outside click
@@ -43,61 +44,85 @@ export const Navbar: React.FC = () => {
         setToolsDropdownOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   // Primary navigation links
   const primaryLinks = [
-    { name: t('nav.home', 'Home'), path: '/' },
-    { name: t('nav.citizenArea', 'Citizen Area'), path: '/citizen-dashboard' },
-    { name: t('nav.nationalMap', 'National Map'), path: '/national-map' },
-    { name: t('nav.liveMap', 'Live Map'), path: '/live-map' },
-    { name: t('nav.incidents', 'Incidents'), path: '/incidents' },
-    { name: t('nav.analytics', 'Analytics'), path: '/analytics' },
+    ...(!isAuthenticated
+      ? [{ name: t("nav.home", "Home"), path: "/welcome" }]
+      : []),
+    ...(isCitizen || !isAuthenticated
+      ? [
+          {
+            name: t("nav.citizenArea", "Citizen Area"),
+            path: "/citizen-dashboard",
+          },
+        ]
+      : []),
+    { name: t("nav.nationalMap", "National Map"), path: "/national-map" },
+    { name: t("nav.liveMap", "Live Map"), path: "/live-map" },
+    { name: t("nav.incidents", "Incidents"), path: "/incidents" },
+    { name: t("nav.analytics", "Analytics"), path: "/analytics" },
   ];
 
   // Secondary tools dropdown items
-  const toolItems = [
-    {
-      name: t('nav.dashboard', 'Operations Dashboard'),
-      path: '/dashboard',
-      icon: LayoutDashboard,
-      desc: 'Real-time telemetry and regional KPIs',
-    },
-    {
-      name: t('nav.reportWeather', 'Report Weather Event'),
-      path: '/report',
-      icon: FileText,
-      desc: 'Submit citizen eyewitness observations',
-    },
-    {
-      name: t('nav.trackReport', 'Track Incident Report'),
-      path: '/track-report',
-      icon: SearchCheck,
-      desc: 'Query report status by tracking ID',
-    },
-  ];
+  const toolItems = isCitizen
+    ? [
+        {
+          name: t("nav.reportWeather", "Report Weather Event"),
+          path: "/report",
+          icon: FileText,
+          desc: "Submit citizen eyewitness observations",
+        },
+        {
+          name: t("nav.trackReport", "Track Incident Report"),
+          path: "/track-report",
+          icon: SearchCheck,
+          desc: "Query report status by tracking ID",
+        },
+      ]
+    : [
+        {
+          name: t("nav.dashboard", "Operations Dashboard"),
+          path: "/dashboard",
+          icon: LayoutDashboard,
+          desc: "Real-time telemetry and regional KPIs",
+        },
+        ...(isAdmin
+          ? [
+              {
+                name: t("nav.trackReport", "Track Incident Report"),
+                path: "/track-report",
+                icon: SearchCheck,
+                desc: "Query report status by tracking ID",
+              },
+            ]
+          : []),
+      ];
 
   if (isCitizen) {
     toolItems.push({
-      name: 'My Submitted Reports',
-      path: '/my-reports',
+      name: "My Submitted Reports",
+      path: "/my-reports",
       icon: FileText,
-      desc: 'View status and review updates on your reports',
+      desc: "View status and review updates on your reports",
     });
   }
 
   if (isOperator) {
     toolItems.push({
-      name: t('nav.verificationQueue', 'Operator Triage Queue'),
-      path: '/admin/queue',
+      name: t("nav.verificationQueue", "Operator Triage Queue"),
+      path: "/admin/queue",
       icon: CheckSquare,
-      desc: 'Authorized operator verification and triage',
+      desc: "Authorized operator verification and triage",
     });
   }
 
-  const isToolActive = toolItems.some((item) => location.pathname === item.path);
+  const isToolActive = toolItems.some(
+    (item) => location.pathname === item.path,
+  );
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/95 backdrop-blur-md shadow-2xs">
@@ -111,16 +136,23 @@ export const Navbar: React.FC = () => {
             aria-label="Toggle navigation menu"
             aria-expanded={mobileMenuOpen}
           >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {mobileMenuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
           </button>
 
-          <Link to="/" className="flex items-center space-x-2 shrink-0">
+          <Link to="/welcome" className="flex items-center space-x-2 shrink-0">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white shadow-xs">
               <Cloud className="h-4.5 w-4.5" />
             </div>
             <div className="flex flex-col">
               <span className="font-black tracking-tight text-blue-900 text-sm whitespace-nowrap">
-                NWBDA <span className="hidden xl:inline font-bold text-slate-500 text-xs">Platform</span>
+                NWBDA{" "}
+                <span className="hidden xl:inline font-bold text-slate-500 text-xs">
+                  Platform
+                </span>
               </span>
             </div>
           </Link>
@@ -136,8 +168,8 @@ export const Navbar: React.FC = () => {
                 to={link.path}
                 className={`relative flex h-full items-center px-1.5 2xl:px-2.5 py-1 text-xs 2xl:text-sm font-semibold whitespace-nowrap transition-colors ${
                   isActive
-                    ? 'text-blue-600 after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-blue-600'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50/80 rounded-md'
+                    ? "text-blue-600 after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-blue-600"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-50/80 rounded-md"
                 }`}
               >
                 {link.name}
@@ -152,12 +184,14 @@ export const Navbar: React.FC = () => {
               onClick={() => setToolsDropdownOpen(!toolsDropdownOpen)}
               className={`relative flex h-full items-center space-x-1 px-1.5 2xl:px-2.5 py-1 text-xs 2xl:text-sm font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                 isToolActive
-                  ? 'text-blue-600 after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-blue-600'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50/80 rounded-md'
+                  ? "text-blue-600 after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-blue-600"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-50/80 rounded-md"
               }`}
             >
-              <span>{t('nav.tools', 'Services & Tools')}</span>
-              <ChevronDown className={`h-3 w-3 transition-transform ${toolsDropdownOpen ? 'rotate-180' : ''}`} />
+              <span>{t("nav.tools", "Services & Tools")}</span>
+              <ChevronDown
+                className={`h-3 w-3 transition-transform ${toolsDropdownOpen ? "rotate-180" : ""}`}
+              />
             </button>
 
             {toolsDropdownOpen && (
@@ -175,18 +209,26 @@ export const Navbar: React.FC = () => {
                       onClick={() => setToolsDropdownOpen(false)}
                       className={`flex items-start space-x-3 rounded-xl p-2.5 transition-colors ${
                         isActive
-                          ? 'bg-blue-50 text-blue-700'
-                          : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
+                          ? "bg-blue-50 text-blue-700"
+                          : "text-slate-700 hover:bg-slate-50 hover:text-slate-900"
                       }`}
                     >
-                      <div className={`mt-0.5 flex h-7 w-7 items-center justify-center rounded-lg ${
-                        isActive ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'
-                      }`}>
+                      <div
+                        className={`mt-0.5 flex h-7 w-7 items-center justify-center rounded-lg ${
+                          isActive
+                            ? "bg-blue-600 text-white"
+                            : "bg-slate-100 text-slate-600"
+                        }`}
+                      >
                         <Icon className="h-4 w-4" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="text-xs font-bold leading-tight truncate">{item.name}</div>
-                        <div className="text-[11px] text-slate-500 leading-tight truncate mt-0.5">{item.desc}</div>
+                        <div className="text-xs font-bold leading-tight truncate">
+                          {item.name}
+                        </div>
+                        <div className="text-[11px] text-slate-500 leading-tight truncate mt-0.5">
+                          {item.desc}
+                        </div>
                       </div>
                     </Link>
                   );
@@ -200,9 +242,9 @@ export const Navbar: React.FC = () => {
             <Link
               to="/admin/queue"
               className={`relative flex h-full items-center px-1.5 2xl:px-2 py-1 text-xs font-bold whitespace-nowrap transition-colors ${
-                location.pathname === '/admin/queue'
-                  ? 'text-blue-600 after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-blue-600'
-                  : 'text-emerald-700 hover:text-emerald-800'
+                location.pathname === "/admin/queue"
+                  ? "text-blue-600 after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-blue-600"
+                  : "text-emerald-700 hover:text-emerald-800"
               }`}
             >
               <span className="flex items-center space-x-1 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
@@ -216,9 +258,9 @@ export const Navbar: React.FC = () => {
             <Link
               to="/my-reports"
               className={`relative flex h-full items-center px-1.5 2xl:px-2 py-1 text-xs font-bold whitespace-nowrap transition-colors ${
-                location.pathname === '/my-reports'
-                  ? 'text-blue-600 after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-blue-600'
-                  : 'text-emerald-700 hover:text-emerald-800'
+                location.pathname === "/my-reports"
+                  ? "text-blue-600 after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-blue-600"
+                  : "text-emerald-700 hover:text-emerald-800"
               }`}
             >
               <span className="flex items-center space-x-1 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
@@ -239,7 +281,7 @@ export const Navbar: React.FC = () => {
             title="Switch Language (English / हिंदी)"
           >
             <Globe className="h-3.5 w-3.5 text-blue-600" />
-            <span>{currentLang === 'en' ? 'HI' : 'EN'}</span>
+            <span>{currentLang === "en" ? "HI" : "EN"}</span>
           </button>
 
           {/* Desktop City Search Bar */}
@@ -250,7 +292,7 @@ export const Navbar: React.FC = () => {
           {isAuthenticated ? (
             <div className="flex items-center space-x-1.5 shrink-0">
               <span className="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200">
-                {user?.role || 'User'}
+                {user?.role || "User"}
               </span>
               <button
                 type="button"
@@ -314,8 +356,8 @@ export const Navbar: React.FC = () => {
                   onClick={() => setMobileMenuOpen(false)}
                   className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-blue-50 text-blue-700 font-bold'
-                      : 'text-slate-700 hover:bg-slate-50'
+                      ? "bg-blue-50 text-blue-700 font-bold"
+                      : "text-slate-700 hover:bg-slate-50"
                   }`}
                 >
                   {link.name}
@@ -336,8 +378,8 @@ export const Navbar: React.FC = () => {
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center space-x-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-blue-50 text-blue-700 font-bold'
-                      : 'text-slate-700 hover:bg-slate-50'
+                      ? "bg-blue-50 text-blue-700 font-bold"
+                      : "text-slate-700 hover:bg-slate-50"
                   }`}
                 >
                   <Icon className="h-4 w-4 text-slate-500" />
@@ -375,4 +417,3 @@ export const Navbar: React.FC = () => {
     </header>
   );
 };
-
