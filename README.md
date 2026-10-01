@@ -110,6 +110,7 @@ The platform includes a containerized demonstration stack running 11 Docker serv
 - **Citizen Demo Account**: `citizen@example.com` / `CitizenPassword2026!`
 - **Health Check**: `curl http://localhost:8080/health`
 - **Readiness Check**: `curl http://localhost:8080/ready`
+- **Comprehensive Setup Guide**: See [docs/SETUP.md](docs/SETUP.md) for full Docker dev stack, manual non-Docker installation, and environment references.
 
 ---
 
@@ -147,7 +148,7 @@ To maintain rigorous scientific and engineering integrity, the platform explicit
 
 ---
 
-## 8. Manual Local Developer Setup (Without Docker)
+## 8. Development Setup & Operations Guide
 
-For manual step-by-step local development without Docker Compose, see [docs/EXTERNAL_SETUP.md](docs/EXTERNAL_SETUP.md) and [docs/MANUAL_TESTING_GUIDE.md](docs/MANUAL_TESTING_GUIDE.md).
+For comprehensive setup instructions covering local development with and without Docker, developer orchestrator usage, and environment configuration, see [docs/SETUP.md](docs/SETUP.md). Step-by-step browser and UI evaluation steps are documented in [docs/MANUAL_TESTING_GUIDE.md](docs/MANUAL_TESTING_GUIDE.md). External provider credentials and upstream APIs are detailed in [docs/EXTERNAL_SETUP.md](docs/EXTERNAL_SETUP.md).
 

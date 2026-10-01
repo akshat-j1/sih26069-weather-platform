@@ -6,10 +6,14 @@ This guide provides simple, step-by-step instructions to test every feature of t
 
 ## 🚀 Quick Setup Check
 
-Make sure your servers are running:
-- **Frontend URL**: [http://localhost:5173](http://localhost:5173)
-- **Backend API URL**: [http://127.0.0.1:8001](http://127.0.0.1:8001) (or `:8000`)
-- **API Health Check**: Open [http://127.0.0.1:8001/ready](http://127.0.0.1:8001/ready) — should show `"status": "ready"`.
+Ensure your platform instance is running and healthy. For complete launch instructions (one-command Docker demo or local development stack), see **[docs/SETUP.md](SETUP.md)**.
+
+- **Docker Demo Stack**:
+  - Web UI: [http://localhost:8080](http://localhost:8080)
+  - API Readiness: [http://localhost:8080/ready](http://localhost:8080/ready)
+- **Local Dev / Hybrid Stack**:
+  - Web UI: [http://localhost:5173](http://localhost:5173)
+  - API Readiness: [http://127.0.0.1:8000/ready](http://127.0.0.1:8000/ready)
 
 ---
 
@@ -18,8 +22,8 @@ Make sure your servers are running:
 | Role | Email | Password | Allowed Areas |
 |---|---|---|---|
 | **Operator / Reviewer** | `operator@weather-platform.gov.in` | `EmergencyOps2026!` | Verification Queue, Audit Logs, Export, Dashboard, Maps |
-| **System Administrator** | `admin@weather-platform.gov.in` | `EmergencyAdmin2026!` | All areas including admin management |
-| **Citizen User** | `citizen@weather-platform.gov.in` | `CitizenPassword2026!` | Citizen Dashboard, Report Submission, Public Tracking |
+| **System Administrator** | `admin@weather-platform.gov.in` | `EmergencyAdmin2026!` | All areas including administrative management |
+| **Citizen User** | `citizen@example.com` | `CitizenPassword2026!` | Citizen Dashboard, Report Submission, Public Tracking |
 
 ---
 
