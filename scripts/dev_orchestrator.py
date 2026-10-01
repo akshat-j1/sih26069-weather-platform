@@ -81,11 +81,26 @@ def main():
     print("\n[3/5] Starting Transactional Outbox Worker...")
     spawn_process("Outbox Worker", [str(venv_python), "-m", "app.workers.run_outbox_worker"], cwd=BACKEND_DIR)
 
-    # 4. Start orchestration dispatcher
-    print("\n[4/5] Starting Orchestration Dispatcher...")
+    # 4. Start Orchestration Dispatcher & Event Ingestion Workers
+    print("\n[4/6] Starting Orchestration Dispatcher & Ingestion Consumers...")
     spawn_process(
         "Orchestration Dispatcher",
         [str(venv_python), "-m", "app.workers.run_dispatcher"],
+        cwd=BACKEND_DIR,
+    )
+    spawn_process(
+        "Ingestion Worker",
+        [str(venv_python), "-m", "app.workers.run_ingestion_worker"],
+        cwd=BACKEND_DIR,
+    )
+    spawn_process(
+        "Observation Worker",
+        [str(venv_python), "-m", "app.workers.run_observation_worker"],
+        cwd=BACKEND_DIR,
+    )
+    spawn_process(
+        "Evidence Worker",
+        [str(venv_python), "-m", "app.workers.run_evidence_worker"],
         cwd=BACKEND_DIR,
     )
 
