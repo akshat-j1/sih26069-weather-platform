@@ -74,11 +74,16 @@ export const LiveMapPage: React.FC = () => {
     return undefined; // All-time
   }, [filters.timeRange]);
 
-  // Compute effective bounding box: manual state filter takes precedence; otherwise use detected/searched city bbox
+  // Compute effective bounding box: manual state filter takes precedence; otherwise use detected/searched city bbox.
+  // IMPORTANT: When "All States" (ALL) is selected, we intentionally skip city-bbox so the query returns all-India.
   const activeBbox = useMemo(() => {
     const regionInfo = REGION_BOUNDS[filters.state];
     if (regionInfo?.bbox) {
       return regionInfo.bbox;
+    }
+    // ALL states selected → national scope; ignore city location bbox
+    if (filters.state === 'ALL') {
+      return undefined;
     }
     return currentLocation.bbox || undefined;
   }, [filters.state, currentLocation.bbox]);

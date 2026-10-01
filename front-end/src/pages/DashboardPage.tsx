@@ -37,11 +37,16 @@ export const DashboardPage: React.FC = () => {
 
   const [selectedReport, setSelectedReport] = useState<MapIncidentPoint | null>(null);
 
-  // Compute effective bounding box: manual region filter takes precedence; otherwise use detected/searched city bbox
+  // Compute effective bounding box: manual region filter takes precedence; otherwise use detected/searched city bbox.
+  // IMPORTANT: When "All India" (ALL) is selected, skip city-bbox so queries return all-India results.
   const effectiveBbox = useMemo(() => {
     const regionInfo = REGIONS[filters.region];
     if (regionInfo?.bbox) {
       return regionInfo.bbox;
+    }
+    // ALL region selected → national scope; ignore city location bbox
+    if (filters.region === 'ALL') {
+      return undefined;
     }
     return currentLocation.bbox || undefined;
   }, [filters.region, currentLocation.bbox]);

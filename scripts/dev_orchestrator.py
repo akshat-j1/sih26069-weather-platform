@@ -89,6 +89,11 @@ def main():
         cwd=BACKEND_DIR,
     )
     spawn_process(
+        "Ingestion Scheduler",
+        [str(venv_python), "-m", "app.workers.run_scheduler"],
+        cwd=BACKEND_DIR,
+    )
+    spawn_process(
         "Ingestion Worker",
         [str(venv_python), "-m", "app.workers.run_ingestion_worker"],
         cwd=BACKEND_DIR,
