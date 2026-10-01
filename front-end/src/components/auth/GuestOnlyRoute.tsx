@@ -9,7 +9,7 @@ export const GuestOnlyRoute: React.FC = () => {
 
   if (isAuthenticated) {
     const from = (location.state as { from?: { pathname?: string } })?.from?.pathname;
-    const target = from || getHomeRouteForRole(user?.role);
+    const target = (from && from !== '/login' && from !== '/signup') ? from : getHomeRouteForRole(user?.role);
     return <Navigate to={target} replace />;
   }
 
