@@ -13,7 +13,7 @@
 │  - Local PostgreSQL 16 + PostGIS (Port 5432)                │
 │  - Local Redis 7 Container (Port 6379)                      │
 │  - Local MinIO S3 Object Storage (Ports 9000/9001)          │
-│  - Local Alembic Migrations (0001 -> 0004)                  │
+│  - Local Alembic Migrations (0001 -> 0020)                  │
 │  - 6 Standalone Worker Processes                            │
 │  - Deterministic Seed Feeds & IMD/CWC/NDMA Local Adapters   │
 └─────────────────────────────────────────────────────────────┘

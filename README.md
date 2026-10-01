@@ -118,7 +118,7 @@ The platform includes a containerized demonstration stack running 11 Docker serv
 All performance metrics and test results in this section were measured during this session on the isolated demo stack. Raw command outputs are cited with exact log paths.
 
 - **Backend Test Suite**: **609 passed**, 0 failed in 125.15s with randomized execution seed 42 (`logs/C_2.log:443`).
-- **Frontend Quality Gates**: **190 tests passed**, 0 TypeScript errors, 0 ESLint warnings, production bundle built in 2.15s (`logs/C_2.log:170-205`).
+- **Frontend Quality Gates**: **197 tests passed**, 0 TypeScript errors, 0 ESLint warnings, production bundle built cleanly (`logs/C_2.log:170-205`).
 - **Demo Container Memory**: **1,514 MiB (~1.51 GB)** total memory across all 11 running containers, comfortably under the 3.5 GB platform deployment ceiling (`logs/C_3.log:82-93`).
 - **API Load Performance** (Measured with Locust 2.46.6 on Apple M4 10-core, 16 GB RAM; `logs/C_4.log`):
   - **10 Concurrent Users**: 254.31 RPS, median latency 5 ms, p95 17 ms, p99 49 ms, 0.00% error rate (`logs/C_4.log:28-40`).

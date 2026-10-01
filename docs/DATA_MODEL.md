@@ -1,14 +1,14 @@
 # Data Model & Entity Specifications
 
 **Platform**: National Weather Big Data Analytics Platform (`SIH26069`)
-**Status**: **SYNCHRONIZED WITH CURRENT CODE & MIGRATIONS** (Alembic Head: `0017_report_is_demo`)
+**Status**: **SYNCHRONIZED WITH CURRENT CODE & MIGRATIONS** (Alembic Head: `0020_image_forensics`)
 **Database**: PostgreSQL 16+ with PostGIS 3.4+ (`SRID 4326`)
 
 ---
 
 ## 1. Entity Relationship Overview
 
-The database schema consists of **15 authoritative tables** mapped directly from declarative SQLAlchemy models.
+The database schema consists of **22 authoritative tables** mapped directly from declarative SQLAlchemy models.
 
 ```mermaid
 erDiagram
@@ -51,6 +51,13 @@ erDiagram
 | `incident_evidence_links`| `IncidentEvidenceLink`| `app/models/evidence.py`| `0002_evidence_and_corroboration_schema`| Association between incidents and evidence items |
 | `incident_observation_corroborations`| `IncidentObservationCorroboration`| `app/models/corroboration.py`| `0002_evidence_and_corroboration_schema`| Physical sensor proximity corroborations |
 | `realtime_outbox` | `RealtimeOutbox` | `app/models/outbox.py` | `0004_realtime_outbox_schema` | Transactional outbox for durable event staging |
+| `weather_reports_archive` | `WeatherReportArchive` | `app/models/report.py` | `0005_weather_reports_archive_schema` | Pruned historical report archive partition |
+| `forecast_advisories` | `ForecastAdvisory` | `app/models/forecast.py` | `0006_forecast_advisories_schema` | Official cyclone tracks & bulletin polygon overlays |
+| `relief_centers` | `ReliefCenter` | `app/models/relief_center.py` | `0007_relief_centers_and_auth_schema` | Emergency relief shelters and evacuation camps |
+| `incident_feedback` | `IncidentFeedback` | `app/models/feedback.py` | `0008_dual_role_auth_and_citizen_profiles` | Citizen crowd confirm/dispute feedback signals |
+| `incident_physical_corroboration` | `IncidentPhysicalCorroboration` | `app/models/corroboration.py` | `0019_incident_physical_corroboration` | Numerical weather model / station atmospheric evaluations |
+| `image_hashes` | `ImagePerceptualHash` | `app/models/image_forensics.py` | `0020_image_forensics_schema` | Perceptual image hashes (pHash, dHash) for media forensics |
+| `incident_image_findings` | `IncidentImageFinding` | `app/models/image_forensics.py` | `0020_image_forensics_schema` | Perceptual match findings and cross-incident media reuse |
 
 ---
 

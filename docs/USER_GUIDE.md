@@ -30,19 +30,28 @@ This platform bridges that gap by:
 
 ## 3. Application Navigation & Screen Inventory
 
-The current frontend contains 10 user-facing screens, identified and documented below, accessible via desktop header navigation and mobile bottom navigation:
+The current frontend contains 14 user-facing screens organized into role-based shells (Guest, Citizen, and Staff views), accessible via desktop navigation headers and mobile bottom navigation:
 
 ```
-[ Navigation Structure ]
-├── Home (/)                     → Public advisories, map preview, and recent verified reports
-├── Submit Report (/report)      → Single-page citizen report intake form with 6 logical sections
-├── Track Report (/track-report) → Tracking ID search, 4-step progress stepper, trust score card
-├── Dashboard (/dashboard)       → Executive KPI cards, regional/hazard filters, situational mini-map
-├── Live Map (/live-map)         → Full-screen Leaflet GIS interactive incident map (500-feature bound)
-├── Incidents (/incidents)       → Searchable incident directory with multi-dimension filters
-├── Analytics (/analytics)       → Macro temporal trends (24h/7d/30d), regional breakdown charts
-└── Operator Portal (/login)     → Operator context gateway for DEOC / SDRF / NDRF triage personnel
-    └── Verification Queue (/admin/queue or /verification) → Priority triage queue & action drawer
+[ Navigation Structure & Role Shells ]
+├── Guest & Authentication Gateway (AuthLayout)
+│   ├── Login (/login)                     → Authentication gateway for citizens and emergency operators
+│   └── Sign Up (/signup)                  → Citizen registration portal
+├── Citizen Portal (CitizenLayout / RoleShell)
+│   ├── Citizen Dashboard (/citizen-dashboard) → Localized incident map, emergency contacts, shelter locator
+│   ├── Submit Report (/report)            → Citizen report intake form with photo upload and GPS
+│   ├── Track Report (/track-report)       → Public tracking ID search, status stepper, trust score card
+│   └── My Submissions (/my-reports)       → Citizen personal report tracking history
+├── Staff Operations & Command (StaffLayout / RoleShell)
+│   ├── Executive Dashboard (/dashboard)   → Real-time KPI metrics, hazard distribution, operational feed
+│   ├── Verification Queue (/admin/queue)  → Priority triage queue, sensor evidence, verification actions
+│   └── Audit Log Viewer (/admin/audit-logs) → Immutable administrative audit trail with export
+└── Shared Geospatial & Analytics Views (RoleShell)
+    ├── Live Map (/live-map)               → Interactive Leaflet GIS incident map (500-feature bound)
+    ├── National Map (/national-map)       → Nationwide hazard map, EEZ boundary, forecast advisories
+    ├── Incident Directory (/incidents)    → Searchable multi-filter incident explorer
+    ├── Incident Deep-Dive (/incidents/:id) → Comprehensive 5-stage corroboration inspection
+    └── Macro Analytics (/analytics)       → 24h/7d/30d temporal trends and regional demographics
 ```
 
 ---
