@@ -11,10 +11,12 @@ import {
   ImageOff,
   History,
   CornerDownRight,
+  ExternalLink,
 } from 'lucide-react';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
 import { ReportDetailData } from '@/types';
+import { PhysicalCorroborationCard } from '@/features/reports/components/PhysicalCorroborationCard';
 import {
   verifyReport,
   rejectReport,
@@ -165,14 +167,25 @@ export const ReviewReportDrawer: React.FC<ReviewReportDrawerProps> = ({
             {report.tracking_id}
           </span>
         </div>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close review panel"
-          className="rounded-xl p-1.5 text-slate-400 hover:bg-slate-200/70 hover:text-slate-700 transition-colors cursor-pointer"
-        >
-          <X className="h-5 w-5" />
-        </button>
+        <div className="flex items-center space-x-2">
+          <a
+            href={`/incidents/${report.tracking_id || report.id}`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center space-x-1 text-xs font-semibold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-lg transition-colors"
+          >
+            <span>Full Analysis</span>
+            <ExternalLink className="h-3.5 w-3.5" />
+          </a>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close review panel"
+            className="rounded-xl p-1.5 text-slate-400 hover:bg-slate-200/70 hover:text-slate-700 transition-colors cursor-pointer"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
       {/* 2. Drawer Body (Scrollable Middle) */}
@@ -292,24 +305,29 @@ export const ReviewReportDrawer: React.FC<ReviewReportDrawerProps> = ({
           </div>
         </div>
 
-        {/* Meteorological Corroboration (Data-Honest State) */}
-        <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-4 space-y-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-1.5">
-              <Radio className="h-4 w-4 text-slate-400" />
-              <span className="text-xs font-bold text-slate-700">
-                Meteorological Corroboration
+        {/* Meteorological Corroboration */}
+        {report.physical_corroboration ? (
+          <div className="space-y-1">
+            <PhysicalCorroborationCard corroboration={report.physical_corroboration} />
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-1.5">
+                <Radio className="h-4 w-4 text-slate-400" />
+                <span className="text-xs font-bold text-slate-700">
+                  Meteorological Corroboration
+                </span>
+              </div>
+              <span className="rounded-md bg-amber-100 text-amber-800 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+                Awaiting Met Pass
               </span>
             </div>
-            <span className="rounded-md bg-slate-200/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-600">
-              Awaiting AWS
-            </span>
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              No ground station within direct proximity (&le;25 km). Ground truth status requires manual operator triage or regional model pass.
+            </p>
           </div>
-          <p className="text-[11px] text-slate-500 leading-relaxed">
-            Automated meteorological corroboration engine is not yet attached to live AWS sensors.
-            Ground truth status remains pending manual operator triage.
-          </p>
-        </div>
+        )}
 
         {/* Credibility Assessment (Data-Honest State) */}
         <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-4 space-y-2">
