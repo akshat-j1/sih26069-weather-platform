@@ -1,5 +1,8 @@
 # Repository Audit Report: sih26069-weather-platform
 
+> [!NOTE]
+> **Historical Archive**: This document is an immutable historical audit record capturing the initial Phase 1/Round 9a baseline findings prior to subsequent architectural hardening, bug fixes, and feature integrations.
+
 ## Environment
 - OS: Darwin 25.5.0 arm64 (macOS)
 - CPU: Apple M4 (10 cores)

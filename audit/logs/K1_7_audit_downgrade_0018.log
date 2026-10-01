@@ -1,3 +1,0 @@
-INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
-INFO  [alembic.runtime.migration] Will assume transactional DDL.
-INFO  [alembic.runtime.migration] Running downgrade 0018_archive_metadata -> 0017_report_is_demo, align ORM indexes and archive metadata

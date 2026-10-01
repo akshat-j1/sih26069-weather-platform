@@ -8,7 +8,7 @@ All commands shown below were executed against the live demo stack (`sih-demo`) 
 
 ## 0. Demo Stack Launch & Verification (T-minus 1 Minute)
 
-Ensure the isolated container stack is running and healthy:
+Ensure the isolated container stack is running and healthy (for comprehensive setup options, environment variables, and manual dev guides, see **[docs/SETUP.md](SETUP.md)**):
 
 ```bash
 # 1. Start the stack (one-command start)

@@ -2,8 +2,8 @@
 
 **Platform**: National Weather Big Data Analytics Platform (Smart India Hackathon 2026 — Problem Statement ID: `SIH26069`)
 **Domain**: Big Data Analytics / Disaster Management / Geospatial Intelligence
-**Document Status**: **ACTIVE SOURCE OF TRUTH (ENGINEERING BASELINE: COMMIT `ba4d349`)**
-**Last Synchronized**: 2026-09-30
+**Document Status**: **ACTIVE SOURCE OF TRUTH (ENGINEERING BASELINE: COMMIT `bca2f30`)**
+**Last Synchronized**: 2026-10-02
 
 ---
 
@@ -12,11 +12,11 @@
 | Attribute | Current Value / State |
 | :--- | :--- |
 | **Git Branch** | `main` |
-| **Current HEAD Commit** | `ba4d349` |
-| **Commit Subject** | `K1-8: audit DB evidence reconciliation` |
+| **Baseline Commit** | `bca2f30` (baseline) |
+| **Commit Subject** | `feat(fe): implement role-based routing shell and separate citizen/staff navigation (N1-N7)` |
 | **Working Tree State** | **Clean** (`0` uncommitted changes, synchronized with `origin/main`) |
-| **Backend Test Baseline** | **479 passed, 0 failed** (`pytest` across 55 test files) |
-| **Frontend Test Baseline** | **180 passed** (`vitest run` across 16 test suites) |
+| **Backend Test Baseline** | **609 passed, 0 failed** (`pytest` across 66 test files) |
+| **Frontend Test Baseline** | **197 passed, 0 failed** (`vitest run` across 19 test suites) |
 | **Backend Static Gates** | `mypy` (9 issues in 2 files; 0 in feedback.py), `ruff check` (0 errors), `ruff format` (clean) |
 | **Frontend Static Gates** | `tsc --noEmit` (0 errors), `npm run lint` (0 warnings/errors) |
 
@@ -27,7 +27,7 @@
 | Subsystem / Area | Implementation Status | Verification Classification | Evidence & Implementation Location |
 | :--- | :--- | :---: | :--- |
 | **Citizen Intake** | Mobile-friendly reporting form, photo upload to MinIO, PostGIS spatial point generation, instant tracking ID. | **MANUALLY & RUNTIME VERIFIED** | [CitizenReportForm.tsx](front-end/src/features/reports/CitizenReportForm.tsx), `POST /api/v1/reports`, report `RPT-20260831-B848D18A`. |
-| **Public Tracking** | Public tracking lookup for status, timeline, and administrative resolution. | **RUNTIME VERIFIED** | [ReportTrackingPage.tsx](front-end/src/pages/ReportTrackingPage.tsx), `GET /api/v1/reports/{id}`. |
+| **Public Tracking** | Public tracking lookup for status, timeline, and administrative resolution. | **RUNTIME VERIFIED** | [TrackReportPage.tsx](front-end/src/pages/TrackReportPage.tsx), `GET /api/v1/reports/{id}`. |
 | **External Ingestion Framework** | Multi-source adapter framework: IMD, NDMA, CWC, Mastodon, GDELT, OpenMeteo, RSS News, DemoSeed. | **BUILT & TESTED** | [back-end/app/ingestion/](back-end/app/ingestion/), `registry.py`, `test_external_ingestion_integration.py`. |
 | **RSS News Adapter (R2)** | Indian weather news from configurable feed list; URL-SHA256 dedupe; robots + rate-limit compliance; place-name → state/city resolution for L1 spatial gate; mocked-HTTP tests. Puri article must not match Mumbai incident — locality gate verified. | **BUILT & TESTED** | [rss_adapter.py](back-end/app/ingestion/rss_adapter.py), `test_rss_adapter.py` (298 lines). |
 | **NDMA SACHET Feed** | Official national disaster alert CAP/JSON feed adapter. | **LIVE PROVIDER VERIFIED** | Real HTTP POST to `https://sachet.ndma.gov.in/cap_public_website/FetchAllAlertDetails` (HTTP 200, 66 alerts parsed, normalized, streamed to `stream:weather:events`, persisted to PostgreSQL). |
@@ -40,7 +40,7 @@
 | **Ingestion Consumer Worker** | Consumes `stream:weather:events`, persists reports (`QUEUED`), stages outbox triggers. | **RUNTIME VERIFIED** | [run_ingestion_worker.py](back-end/app/workers/run_ingestion_worker.py), `IngestionWorker`. |
 | **Observation Worker** | Consumes `stream:weather:observations`, persists to `weather_observations`. | **RUNTIME VERIFIED** | [run_observation_worker.py](back-end/app/workers/run_observation_worker.py), `ObservationWorker`. |
 | **Evidence Worker** | Consumes `stream:weather:evidence`, persists to `evidence_items`. | **RUNTIME VERIFIED** | [run_evidence_worker.py](back-end/app/workers/run_evidence_worker.py), `EvidenceWorker`. |
-| **Intelligence Pipeline** | 5-stage deterministic pipeline (`LOCATION`, `DUPLICATE`, `EVIDENCE`, `OBSERVATION`, `CREDIBILITY`). | **RUNTIME VERIFIED** | [pipeline.py](back-end/app/intelligence/pipeline.py), `IncidentPipeline`, `test_live_intelligence_integration.py`. |
+| **Intelligence Pipeline** | 5-stage deterministic pipeline (`LOCATION`, `DUPLICATE`, `EVIDENCE`, `OBSERVATION`, `CREDIBILITY`). | **RUNTIME VERIFIED** | [incident_pipeline.py](back-end/app/orchestration/incident_pipeline.py), `IncidentPipeline`, `test_live_intelligence_integration.py`. |
 | **Multilingual Classification (R4)** | Keyword rule engine with Hindi/Hinglish (Devanagari + Roman) support for `FOG`, `DUST_STORM`, `STRONG_WIND`, `FLOOD_WATERLOGGING`, `CYCLONE_STORM`, etc. 60-post regression suite ≥85% accuracy; 10 hoax posts credibility < 0.45. | **BUILT & TESTED** | [category_rules.py](back-end/app/intelligence/category_rules.py), `test_r4_classification_regression.py` (154 lines). |
 | **Duplicate Detection Engine** | Spatial ($R \le 2500\text{m}$) + Temporal ($\Delta T \le 3\text{h}$) + Domain-Boosted TF-IDF Vectorizer (`sparse_tfidf_ngram_v1`). | **RUNTIME VERIFIED** | [duplicate_scorer.py](back-end/app/intelligence/duplicate_scorer.py), [semantic_similarity.py](back-end/app/intelligence/semantic_similarity.py). Zero FastEmbed/ONNX dependencies in live duplicate path. |
 | **Orchestration Dispatcher** | Consumes `stream:weather:orchestration`, runs pipeline or single stages, transitions reports to `COMPLETED`. | **RUNTIME VERIFIED** | [run_dispatcher.py](back-end/app/workers/run_dispatcher.py), `OrchestrationDispatcher`. |
@@ -55,12 +55,12 @@
 | **Admin Export, Bulk & Audit (R3)** | Operator-only streamed CSV & GeoJSON export (max 50k rows); atomic bulk verify/reject (max 100 IDs, single transaction, one `AuditLog` row per incident); paginated audit-log `GET` with filters; `AdminAuditLogPage` frontend viewer; export + bulk buttons in queue page. Auth: `get_current_operator` JWT guard. Tests: 401 without token, 422 on limit breach, CSV/GeoJSON structure, atomic audit rows, rollback on invalid ID. | **BUILT & TESTED** | [admin.py](back-end/app/api/v1/admin.py), [AdminAuditLogPage.tsx](front-end/src/pages/AdminAuditLogPage.tsx), `test_admin_endpoints.py` (7/7 pass). |
 | **Analytics Platform** | Server-aggregated activity trends and two-tier regional demographics. | **RUNTIME VERIFIED** | [AnalyticsPage.tsx](front-end/src/pages/AnalyticsPage.tsx), `GET /api/v1/analytics/*`. |
 | **Operator Auth & Route Guard (Part 5)** | JWT access token creation/validation (`pyjwt`) and bcrypt password hashing (`users` table). `POST /api/v1/auth/login` endpoint; `get_current_operator` FastAPI dependency locking `/api/v1/verification/*`; `ProtectedRoute.tsx` frontend route guard. | **IMPLEMENTED & RUNTIME VERIFIED** | [security.py](back-end/app/core/security.py), [deps.py](back-end/app/api/deps.py), [auth.py](back-end/app/api/v1/auth.py), [AuthContext.tsx](front-end/src/context/AuthContext.tsx), [ProtectedRoute.tsx](front-end/src/components/auth/ProtectedRoute.tsx). |
-| **Location Onboarding Gate (Feature 1)** | Geolocation detection with Nominatim reverse-geocode fallback, session storage persistence, and manual city search prompt. | **IMPLEMENTED & RUNTIME VERIFIED** | [LocationContext.tsx](front-end/src/context/LocationContext.tsx), [LocationGateModal.tsx](front-end/src/components/common/LocationGateModal.tsx). |
+| **Location Onboarding Gate (Feature 1)** | Geolocation detection with Nominatim reverse-geocode fallback, session storage persistence, and manual city search prompt. | **IMPLEMENTED & RUNTIME VERIFIED** | [LocationContext.tsx](front-end/src/context/LocationContext.tsx), [LocationGateModal.tsx](front-end/src/components/location/LocationGateModal.tsx). |
 | **"My Area" Citizen Dashboard (Feature 2)** | Hyper-local incident proximity map, distance sorting, verified incidents query (`GET /api/v1/geo/incidents/nearby`), and public safety radius filters. | **IMPLEMENTED & RUNTIME VERIFIED** | [CitizenDashboardPage.tsx](front-end/src/pages/CitizenDashboardPage.tsx), [geo.py](back-end/app/api/v1/geo.py). |
-| **Real Road Routing Corridor Check (Feature 3)** | OSRM road routing engine integration; PostGIS `ST_Buffer` (2 km corridor) and `ST_Intersects` against verified disaster incidents. Dynamic risk polyline rendering. | **IMPLEMENTED & RUNTIME VERIFIED** | [routes.py](back-end/app/api/v1/routes.py), [osrm_service.py](back-end/app/services/osrm_service.py), [RouteBlockageChecker.tsx](front-end/src/components/common/RouteBlockageChecker.tsx). |
+| **Real Road Routing Corridor Check (Feature 3)** | OSRM road routing engine integration; PostGIS `ST_Buffer` (2 km corridor) and `ST_Intersects` against verified disaster incidents. Dynamic risk polyline rendering. | **IMPLEMENTED & RUNTIME VERIFIED** | [routes.py](back-end/app/api/v1/routes.py), [route_service.py](back-end/app/services/route_service.py), [RouteBlockageChecker.tsx](front-end/src/components/route/RouteBlockageChecker.tsx). |
 | **National Map & Forecast Advisories (Feature 4)** | All-India + EEZ maritime boundary layer, verified nationwide incidents, official IMD/NDMA cyclone tracks & forecast bulletins (`forecast_advisories` table, `GET /api/v1/geo/forecasts`), and density heatmap toggle (B5). | **IMPLEMENTED & RUNTIME VERIFIED** | [NationalMapPage.tsx](front-end/src/pages/NationalMapPage.tsx), [forecast.py](back-end/app/models/forecast.py), [geo.py](back-end/app/api/v1/geo.py). |
 | **Relief Center Locator (B1)** | Admin-curated emergency shelters & evacuation camps; PostGIS `ST_DWithin` spatial proximity API (`GET /api/v1/geo/relief-centers`); Leaflet shelter map layer (`🏕️`). | **IMPLEMENTED & RUNTIME VERIFIED** | [relief_center.py](back-end/app/models/relief_center.py), [relief_centers.py](back-end/app/api/v1/relief_centers.py). |
-| **Vernacular Language Support (B2)** | `react-i18next` Hindi & English bilingual localization across citizen-facing interfaces, navbars, and incident descriptors. | **IMPLEMENTED & RUNTIME VERIFIED** | [i18n/index.ts](front-end/src/i18n/index.ts), [Navbar.tsx](front-end/src/components/layout/Navbar.tsx). |
+| **Vernacular Language Support (B2)** | `react-i18next` Hindi & English bilingual localization across citizen-facing interfaces, navbars, and incident descriptors. | **IMPLEMENTED & RUNTIME VERIFIED** | [i18n/index.ts](front-end/src/i18n/index.ts), [CitizenNavbar.tsx](front-end/src/components/layout/CitizenNavbar.tsx) / [StaffNavbar.tsx](front-end/src/components/layout/StaffNavbar.tsx). |
 | **Real-Time Proximity Alerts (B3)** | Real-time SSE listener comparing incoming weather alerts against user GPS position; 25 km threshold animated emergency banner toast. | **IMPLEMENTED & RUNTIME VERIFIED** | [useProximityAlerts.ts](front-end/src/hooks/useProximityAlerts.ts), [CitizenDashboardPage.tsx](front-end/src/pages/CitizenDashboardPage.tsx). |
 | **Community Crowd Validation (B4)** | Citizen "still accurate?" confirm/dispute crowd feedback loop (`incident_feedback` model & API `POST /api/v1/incidents/{id}/feedback`). | **IMPLEMENTED & RUNTIME VERIFIED** | [feedback.py](back-end/app/models/feedback.py), [FeedbackWidget.tsx](front-end/src/components/incident/FeedbackWidget.tsx). |
 | **One-Tap Emergency Contacts (B7)** | Quick-dial telephone directory card for NDRF (1078), SDRF (1070), DEOC (1077), and CWC (1800-11-2020). | **IMPLEMENTED & RUNTIME VERIFIED** | [EmergencyContactsCard.tsx](front-end/src/components/common/EmergencyContactsCard.tsx). |

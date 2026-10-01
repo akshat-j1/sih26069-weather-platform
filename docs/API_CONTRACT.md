@@ -3,8 +3,8 @@
 **Platform**: National Weather Big Data Analytics Platform (`SIH26069`)
 **Base URL**: `/api/v1`
 **Standard Response Format**: All responses adhere to a consistent JSON envelope.
-**Total Operations**: 31 operations across 30 canonical paths.
-**Status**: **SYNCHRONIZED WITH CURRENT CODE & OPENAPI SPECIFICATION (Round 9b)**
+**Total Operations**: 52 operations across 48 canonical paths (48 operations across 44 paths under `/api/v1`).
+**Status**: **SYNCHRONIZED WITH CURRENT CODE & OPENAPI SPECIFICATION**
 
 ---
 
@@ -68,7 +68,7 @@
 > [!TIP]
 > **Demo Data Filter**: All list/map/dashboard endpoints accept `?hide_demo=true` (SQL-level `WHERE is_demo = false` filter). Default is `false` (demo data visible). Set `HIDE_DEMO_DEFAULT=true` in `docker-compose.demo.yml` to flip the default for evaluation stacks.
 
-## 3. Complete API Catalog (22 Paths / 23 Operations)
+## 3. Complete API Catalog (48 Paths / 52 Operations)
 
 ### 3.1 System Health & Metadata
 
