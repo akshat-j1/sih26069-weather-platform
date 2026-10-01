@@ -1,4 +1,0 @@
-SECRET_KEY default: default-insecure-dev-secret-key-replace-in-production
-Is insecure default: False
-DEBUG default: True
-/docs reachable HTTP status: 200
