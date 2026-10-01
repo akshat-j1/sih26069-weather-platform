@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from "react";
+import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "@/i18n";
@@ -14,65 +14,20 @@ import { CitizenLayout } from "@/components/layout/CitizenLayout";
 import { StaffLayout } from "@/components/layout/StaffLayout";
 import { RoleShell } from "@/components/layout/RoleShell";
 
-// O5: Route-level lazy loading — each page becomes a separate async chunk.
-const DashboardPage = lazy(() =>
-  import("@/pages/DashboardPage").then((m) => ({ default: m.DashboardPage }))
-);
-const LiveMapPage = lazy(() =>
-  import("@/pages/LiveMapPage").then((m) => ({ default: m.LiveMapPage }))
-);
-const CitizenReportPage = lazy(() =>
-  import("@/pages/CitizenReportPage").then((m) => ({
-    default: m.CitizenReportPage,
-  }))
-);
-const TrackReportPage = lazy(() =>
-  import("@/pages/TrackReportPage").then((m) => ({
-    default: m.TrackReportPage,
-  }))
-);
-const IncidentListPage = lazy(() =>
-  import("@/pages/IncidentListPage").then((m) => ({
-    default: m.IncidentListPage,
-  }))
-);
-const IncidentDetailPage = lazy(() =>
-  import("@/pages/IncidentDetailPage").then((m) => ({
-    default: m.IncidentDetailPage,
-  }))
-);
-const CitizenDashboardPage = lazy(() =>
-  import("@/pages/CitizenDashboardPage").then((m) => ({
-    default: m.CitizenDashboardPage,
-  }))
-);
-const NationalMapPage = lazy(() =>
-  import("@/pages/NationalMapPage").then((m) => ({
-    default: m.NationalMapPage,
-  }))
-);
-const AdminVerificationQueuePage = lazy(() =>
-  import("@/pages/AdminVerificationQueuePage").then((m) => ({
-    default: m.AdminVerificationQueuePage,
-  }))
-);
-const AdminAuditLogPage = lazy(() =>
-  import("@/pages/AdminAuditLogPage").then((m) => ({
-    default: m.AdminAuditLogPage,
-  }))
-);
-const AnalyticsPage = lazy(() =>
-  import("@/pages/AnalyticsPage").then((m) => ({ default: m.AnalyticsPage }))
-);
-const LoginPage = lazy(() =>
-  import("@/pages/LoginPage").then((m) => ({ default: m.LoginPage }))
-);
-const SignupPage = lazy(() =>
-  import("@/pages/SignupPage").then((m) => ({ default: m.SignupPage }))
-);
-const MyReportsPage = lazy(() =>
-  import("@/pages/MyReportsPage").then((m) => ({ default: m.MyReportsPage }))
-);
+import { DashboardPage } from "@/pages/DashboardPage";
+import { LiveMapPage } from "@/pages/LiveMapPage";
+import { CitizenReportPage } from "@/pages/CitizenReportPage";
+import { TrackReportPage } from "@/pages/TrackReportPage";
+import { IncidentListPage } from "@/pages/IncidentListPage";
+import { IncidentDetailPage } from "@/pages/IncidentDetailPage";
+import { CitizenDashboardPage } from "@/pages/CitizenDashboardPage";
+import { NationalMapPage } from "@/pages/NationalMapPage";
+import { AdminVerificationQueuePage } from "@/pages/AdminVerificationQueuePage";
+import { AdminAuditLogPage } from "@/pages/AdminAuditLogPage";
+import { AnalyticsPage } from "@/pages/AnalyticsPage";
+import { LoginPage } from "@/pages/LoginPage";
+import { SignupPage } from "@/pages/SignupPage";
+import { MyReportsPage } from "@/pages/MyReportsPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -83,33 +38,11 @@ const queryClient = new QueryClient({
   },
 });
 
-function PageFallback() {
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        background: "#0f172a",
-        color: "#94a3b8",
-        fontSize: "1rem",
-      }}
-    >
-      Loading…
-    </div>
-  );
-}
-
 export function AuthGate() {
   const { isAuthenticated, user } = useAuth();
 
   if (!isAuthenticated) {
-    return (
-      <Suspense fallback={<PageFallback />}>
-        <LoginPage />
-      </Suspense>
-    );
+    return <LoginPage />;
   }
 
   return <Navigate to={getHomeRouteForRole(user?.role)} replace />;
